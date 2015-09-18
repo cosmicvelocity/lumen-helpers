@@ -1,0 +1,27 @@
+{
+  "name": "cosmicvelocity/lumen-helpers",
+  "description": "Support to Lumen.",
+  "keywords": [
+    "lumen"
+  ],
+  "license": "Apache",
+  "authors": [
+    {
+      "name": "Kouichi Machida",
+      "email": "k01@white-wing.jp"
+    }
+  ],
+  "require": {
+    "php": ">=5.4.0",
+    "laravel/lumen-framework": "~5.1"
+  },
+  "require-dev": {
+    "mockery/mockery": "~0.9.0",
+    "phpunit/phpunit": "~4.0.0"
+  },
+  "autoload": {
+    "files": [
+      "src/helpers.php"
+    ]
+  }
+}
