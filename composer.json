@@ -1,27 +1,39 @@
 {
   "name": "cosmicvelocity/lumen-helpers",
-  "description": "Support to Lumen.",
+  "description": "A library for enhancing interoperability between lumen and laravel.",
   "keywords": [
     "lumen"
   ],
-  "license": "Apache",
+  "license": "Apache License 2.0",
+  "type": "library",
   "authors": [
     {
       "name": "Kouichi Machida",
-      "email": "k01@white-wing.jp"
+      "email": "k-machida@aideo.co.jp"
     }
   ],
   "require": {
     "php": ">=5.4.0",
-    "laravel/lumen-framework": "~5.1"
+    "laravel/lumen-framework": ">=5.1"
   },
   "require-dev": {
     "mockery/mockery": "~0.9.0",
-    "phpunit/phpunit": "~4.0.0"
+    "phpunit/phpunit": "~5.7"
   },
   "autoload": {
+    "psr-4": {
+      "CosmicVelocity\\LumenHelpers\\": "src/CosmicVelocity/LumenHelpers/"
+    },
     "files": [
       "src/helpers.php"
     ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "CosmicVelocity\\LumenHelpers\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
   }
 }
