@@ -63,17 +63,28 @@ $app->middleware([
 
 それぞれ Laravel の同名ヘルパーと同様の動作を行います。
 
+- **abort_if**
+- **abort_unless**
+- **action**
+- **app_path**
 - **asset**
 - **auth**
 - **back**
+- **bcrypt**
+- **cache**
+- **cookie**
 - **csrf_field**
 - **csrf_token**
 - **logger**
 - **method_field**
 - **mix**
 - **old**
+- **policy**
 - **public_path**
+- **session**
+- **validator**
 
 その他、下記のような独自のヘルパーを提供します。
 
-- **redirectWithSession**: Lumen の redirect ヘルパーはセッションの引継ぎは行いません。redirectWithSession ではセッションの引継ぎを行います。ただし、事前に SessionServiceProvider などの組み込みを行い、Lumen でセッションが有効になっている必要があります。
+- **app_with**: makeWith の呼び出しに対応する app() 互換のヘルパー。
+- **redirect_with_session**: Lumen の redirect ヘルパーはセッションの引継ぎは行いませんが、redirect_with_session ではセッションの引継ぎを行います。ただし、事前に SessionServiceProvider などの組み込みを行い、Lumen でセッションが有効になっている必要があります。
