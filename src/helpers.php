@@ -87,8 +87,7 @@ if (!function_exists('action')) {
                         return isset($parameters[$m[1]]) ? array_pull($parameters, $m[1]) : $m[0];
                     }, $uri);
 
-                    $generator = new UrlGenerator($app);
-                    $uri = $generator->to($uri, []);
+                    $uri = with(new UrlGenerator($app))->to($uri, []);
 
                     if (!$absolute) {
                         $root = $app->make('request')->root();
@@ -126,13 +125,21 @@ if (!function_exists('app_with')) {
      */
     function app_with($abstract = null, array $parameters = [])
     {
+        /** @var Application $app */
+        $app = Application::getInstance();
+
         if (is_null($abstract)) {
-            return Application::getInstance();
+            return $app;
         }
 
-        return empty($parameters)
-            ? Application::getInstance()->make($abstract)
-            : Application::getInstance()->makeWith($abstract, $parameters);
+        // makeWith は illuminate/container:5.4 からなのでメソッドの有無を確認。
+        if (method_exists($app, 'makeWith')) {
+            return empty($parameters)
+                ? $app->make($abstract)
+                : $app->makeWith($abstract, $parameters);
+        } else {
+            return $app->make($abstract, $parameters);
+        }
     }
 }
 
