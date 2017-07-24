@@ -17,6 +17,7 @@ use Laravel\Lumen\Routing\UrlGenerator;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use CosmicVelocity\LumenHelpers\Http\Redirector;
 
 if (!function_exists('abort_if')) {
     /**
@@ -461,7 +462,20 @@ if (!function_exists('redirect_with_session')) {
      */
     function redirect_with_session($to = null, $status = 302, $headers = [], $secure = null)
     {
-        $redirector = new CosmicVelocity\LumenHelpers\Http\Redirector(app());
+        /** @var Application $app */
+        $app = app();
+        $matches = [];
+
+        if (preg_match('/Lumen \(([0-9\.]+)\)/', $app->version(), $matches)) {
+            $version = floatval(trim($matches[1]));
+
+            // lumen 5.2 未満であれば redirect の呼び出しで問題なし。
+            if ($version < 5.2) {
+                return redirect($to, $status, $headers, $secure);
+            }
+        }
+
+        $redirector = new Redirector(app());
 
         if (is_null($to)) {
             return $redirector;
