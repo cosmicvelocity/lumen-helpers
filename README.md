@@ -1,38 +1,32 @@
-# lumen-helpers
-Lumen ではサポートされていない Laravel の機能をサポートするヘルパーを提供します。
+# cosmicvelocity/lumen-helpers
+Lumen provides a helper to support Laravel 's unsupported features.
 
-Lumen は 5.2 からステートレスな API を提供する事に焦点をあてるようになったため、session などが外されています。
-しかしながら処理速度の軽い Lumen は通常のウェブアプリケーション開発にも魅力的です。
+Since Lumen started focusing on providing stateless APIs from 5.2, session etc etc has been removed.
+However, Lumen, which has a low processing speed, is also attractive for regular web application development.
 
-幸い、Lumen は Laravel のコンポーネントを組み込む事で、外された機能を再度取り込む事もできます。
-そういった Lumen の使い方をした際に不足する機能を提供するのがこのライブラリです。
+Fortunately, Lumen can incorporate the components of Laravel and reintroduce the removed function.
+This library provides functions that are missing when you use Lumen like that.
 
-そのほか、Lumen 5.1 未満で開発したアプリケーションのアップグレード時の補助や、
-将来的に Laravel へ移行することを想定しての実装互換性の向上などに利用できます。
+In addition, it supports the upgrading of applications developed under Lumen 5.1,
+It can be used for improving implementation compatibility, assuming that you are planning to migrate to Laravel in the future.
 
-## インストール
-composer を使っている場合は、下記のような記述を追加する事で導入できます。
+## Installation
+If composer is used, it can be introduced by adding the following description.
 
 ```json
 {
-    "repositories": [
-        {
-          "type": "vcs",
-          "url": "https://github.com/cosmicvelocity/lumen-helpers.git"
-        }
-    ],
     "require": {
         "cosmicvelocity/lumen-helpers": ">=1.0"
     }
 }
 ```
 
-セッションに関連するヘルパーを使用する場合、Lumen でセッションが使えるように設定されている必要があります。
+When using helpers related to sessions, Lumen needs to be set so that sessions can be used.
 
-Lumen 5.4 でセッションを有効にする場合、bootstrap.php で下記のように Application を設定します。
+To enable sessions with Lumen 5.4, set the Application in bootstrap.php as shown below.
   
 ```php
-// 必要なエイリアスを追加。
+// Add required alias.
 $app->alias('cookie', \Illuminate\Cookie\CookieJar::class);
 $app->alias('cookie', \Illuminate\Contracts\Cookie\Factory::class);
 $app->alias('cookie', \Illuminate\Contracts\Cookie\QueueingFactory::class);
@@ -40,19 +34,19 @@ $app->alias('session', \Illuminate\Session\SessionManager::class);
 $app->alias('session.store', \Illuminate\Session\Store::class);
 $app->alias('session.store', \Illuminate\Contracts\Session\Session::class);
 
-// 設定ファイルを読み込み。
-// ※Laravel 同様の設定ファイルを config/session.php で用意する必要があります。
+// Read the configuration file.
+// You need to prepare a configuration file similar to Laravel in config/session.php.
 $app->configure('session');
 
 $app->withFacades(true, [
     \Illuminate\Support\Facades\Config::class => 'Config'
 ]);
 
-// Cookie, Session のサービスプロバイダを設定。
+// Set cookie, Session service provider.
 $app->register(\Illuminate\Cookie\CookieServiceProvider::class);
 $app->register(\Illuminate\Session\SessionServiceProvider::class);
 
-// ミドルウェアを設定。
+// Set middleware.
 $app->middleware([
     \Illuminate\Cookie\Middleware\EncryptCookies::class,
     \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
@@ -61,10 +55,10 @@ $app->middleware([
 ]);
 ```
 
-## 使い方
-現在提供されているヘルパーは下記のようなものがあります。
+## How to use
+The helper currently provided is as follows.
 
-それぞれ Laravel の同名ヘルパーと同様の動作を行います。
+I will do the same operation as Laravel 's same name helper.
 
 - **abort_if**
 - **abort_unless**
@@ -87,16 +81,16 @@ $app->middleware([
 - **session**
 - **validator**
 
-その他、下記のような独自のヘルパーを提供します。
+In addition, we provide our own helper as below.
 
 - **app_with**:
-    makeWith の呼び出しに対応する app() 互換のヘルパー。
-    illuminate/container:5.4 から make に $parameters を渡せなくなり、代わって makeWith が用意されましたが、
-    app_with を使う事で Lumen, illuminate/container のバージョンを問わすパラメーターを渡しての make を行えます。
+    An app () compatible helper corresponding to makeWith call.
+    illuminate/container: From 5.4, you can not pass $parameters to make, instead makeWith prepared,
+    By using app_with, make can be done by passing parameters that ask Lumen, illuminate / container version.
 
 - **redirect_with_session**:
-    Lumen 5.2 以降の redirect ヘルパーはセッションの引継ぎは行わないため、セッションの引継ぎを行う redirect_with_session を提供しています。
-    ただし、事前に SessionServiceProvider などの組み込みを行い、Lumen でセッションが有効になっている必要があります。
+    Since the redirect helper from Lumen 5.2 onward does not take over the session, we provide redirect_with_session to inherit the session.
+    However, it must be built in advance such as SessionServiceProvider and session must be enabled in Lumen.
 
     ```php
     return redirect_with_session(route('index'))
@@ -104,11 +98,11 @@ $app->middleware([
         ->withInput();
     ```
 
-    redirect_with_session を使う事で withErrors, withInput 等も期待する動作をするようになります。
-    redirect を redirect_with_session に置き換えたい場合は、bootstrap/app.php で下記のようにする事で置き換える事ができます。
+    By using redirect_with_session, you will be expecting withErrors, withInput etc.
+    If you want to replace redirect with redirect_with_session you can replace it with bootstrap/app.php as follows.
     
     ```php
-    // 先に redirect を定義。
+    // Define redirect first.
     function redirect($to = null, $status = 302, $headers = [], $secure = null) {
       return redirect_with_session($to, $status, $headers, $secure);
     }

@@ -7,11 +7,10 @@ use Illuminate\Cache\ArrayStore;
 use Illuminate\Cache\Repository;
 use Illuminate\Session\CacheBasedSessionHandler;
 use Illuminate\Session\Store;
-use Mockery as m;
 use Laravel\Lumen\Application;
-use PHPUnit_Framework_TestCase;
+use Mockery as m;
 
-class RedirectorTest extends PHPUnit_Framework_TestCase
+class RedirectorTest extends TestCase
 {
 
     public function tearDown()

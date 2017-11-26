@@ -11,7 +11,7 @@ use Laravel\Lumen\Application;
 use Mockery as m;
 use PHPUnit_Framework_TestCase;
 
-class HelpersTest extends PHPUnit_Framework_TestCase
+class HelpersTest extends TestCase
 {
 
     public function tearDown()
