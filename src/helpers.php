@@ -382,7 +382,9 @@ if (!function_exists('mix')) {
         }
 
         if (file_exists(public_path($manifestDirectory . '/hot'))) {
-            return new HtmlString(url() . ":8080{$path}");
+            $port = config('mix.port', 8080);
+
+            return new HtmlString(url() . ":{$port}{$path}");
         }
 
         if (!$manifest) {
