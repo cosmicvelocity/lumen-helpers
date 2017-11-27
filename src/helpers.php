@@ -1,5 +1,6 @@
 <?php
 
+use CosmicVelocity\LumenHelpers\Http\Redirector;
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use Illuminate\Contracts\Auth\Guard;
@@ -17,7 +18,6 @@ use Laravel\Lumen\Routing\UrlGenerator;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use CosmicVelocity\LumenHelpers\Http\Redirector;
 
 if (!function_exists('abort_if')) {
     /**
@@ -77,8 +77,22 @@ if (!function_exists('action')) {
     {
         /** @var Application $app */
         $app = app();
+        $matches = [];
 
-        foreach ($app->getRoutes() as $route) {
+        if (preg_match('/Lumen \(([0-9\.]+)\)/', $app->version(), $matches)) {
+            $version = floatval(trim($matches[1]));
+
+            // lumen 5.5 以降であれば router を取得する。
+            if (5.5 <= $version) {
+                $routes = app('router')->getRoutes();
+            } else {
+                $routes = $app->getRoutes();
+            }
+        } else {
+            $routes = $app->getRoutes();
+        }
+
+        foreach ($routes as $route) {
             $uri = $route['uri'];
             $action = $route['action'];
 
@@ -382,9 +396,49 @@ if (!function_exists('mix')) {
         }
 
         if (file_exists(public_path($manifestDirectory . '/hot'))) {
-            $port = config('mix.port', 8080);
+            $url = url($path);
+            $parts = parse_url($url);
 
-            return new HtmlString(url() . ":{$port}{$path}");
+            $mixPort = config('mix.port', 8080);
+
+            if ($parts['port'] != $mixPort) {
+                $url = $parts['scheme'];
+                $url .= '://';
+
+                if (isset($parts['user'])) {
+                    $url .= $parts['user'];
+                    $url .= ':';
+
+                    if (isset($parts['pass'])) {
+                        $url .= $parts['pass'];
+                    }
+
+                    $url .= '@';
+                }
+
+                $url .= $parts['host'];
+
+                if ($mixPort != 80) {
+                    $url .= ':';
+                    $url .= $mixPort;
+                }
+
+                if (isset($parts['path'])) {
+                    $url .= $parts['path'];
+                }
+
+                if (isset($parts['query'])) {
+                    $url .= '?';
+                    $url .= $parts['query'];
+                }
+
+                if (isset($parts['fragment'])) {
+                    $url .= '#';
+                    $url .= $parts['fragment'];
+                }
+            }
+
+            return new HtmlString($url);
         }
 
         if (!$manifest) {
