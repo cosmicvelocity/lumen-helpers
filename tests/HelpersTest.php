@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Session\CacheBasedSessionHandler;
 use Illuminate\Session\Store;
 use Laravel\Lumen\Application;
+use Laravel\Lumen\Routing\Router;
 use Mockery as m;
 use Exception;
 
@@ -24,11 +25,28 @@ class HelpersTest extends TestCase
         $app = new Application();
         Application::setInstance($app);
 
-        $app->router->get('/', 'IndexController@index');
-        $app->router->get('/version.html', function () {
+        /** @var Router $router */
+        $router = null;
+        $matches = [];
+
+        if (preg_match('/Lumen \(([0-9\.]+)\)/', $app->version(), $matches)) {
+            $version = floatval(trim($matches[1]));
+
+            // lumen 5.5 以降であれば router を取得する。
+            if (5.5 <= $version) {
+                $router = app('router');
+            } else {
+                $router = $app->getRoutes();
+            }
+        } else {
+            $router = $app->getRoutes();
+        }
+
+        $router->get('/', 'IndexController@index');
+        $router->get('/version.html', function () {
             return 'Hello !!';
         });
-        $app->router->get('/view/{id}', 'IndexController@view');
+        $router->get('/view/{id}', 'IndexController@view');
 
         $request = Request::create('/', 'GET');
         $app->instance('request', $request);
