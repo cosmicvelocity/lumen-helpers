@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Contracts\Cookie\Factory as CookieFactory;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Contracts\Logging\Log;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
@@ -15,6 +16,7 @@ use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use Laravel\Lumen\Application;
 use Laravel\Lumen\Routing\UrlGenerator;
+use Symfony\Component\Debug\Exception\FatalThrowableError;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -379,81 +381,46 @@ if (!function_exists('mix')) {
      * @param string $path
      * @param string $manifestDirectory
      *
-     * @return HtmlString
+     * @return HtmlString|string
      *
      * @throws Exception
      */
     function mix($path, $manifestDirectory = '')
     {
-        static $manifest;
+        static $manifests = [];
 
-        if (!starts_with($path, '/')) {
+        if (!Str::startsWith($path, '/')) {
             $path = "/{$path}";
         }
 
-        if ($manifestDirectory && !starts_with($manifestDirectory, '/')) {
+        if ($manifestDirectory && !Str::startsWith($manifestDirectory, '/')) {
             $manifestDirectory = "/{$manifestDirectory}";
         }
 
         if (file_exists(public_path($manifestDirectory . '/hot'))) {
-            $url = url($path);
-            $parts = parse_url($url);
+            $port = config('mix.port', 8080);
 
-            $mixPort = config('mix.port', 8080);
-
-            if ($parts['port'] != $mixPort) {
-                $url = $parts['scheme'];
-                $url .= '://';
-
-                if (isset($parts['user'])) {
-                    $url .= $parts['user'];
-                    $url .= ':';
-
-                    if (isset($parts['pass'])) {
-                        $url .= $parts['pass'];
-                    }
-
-                    $url .= '@';
-                }
-
-                $url .= $parts['host'];
-
-                if ($mixPort != 80) {
-                    $url .= ':';
-                    $url .= $mixPort;
-                }
-
-                if (isset($parts['path'])) {
-                    $url .= $parts['path'];
-                }
-
-                if (isset($parts['query'])) {
-                    $url .= '?';
-                    $url .= $parts['query'];
-                }
-
-                if (isset($parts['fragment'])) {
-                    $url .= '#';
-                    $url .= $parts['fragment'];
-                }
-            }
-
-            return new HtmlString($url);
+            return new HtmlString("//localhost:{$port}{$path}");
         }
 
-        if (!$manifest) {
-            if (!file_exists($manifestPath = public_path($manifestDirectory . '/mix-manifest.json'))) {
+        $manifestPath = public_path($manifestDirectory . '/mix-manifest.json');
+
+        if (!isset($manifests[$manifestPath])) {
+            if (!file_exists($manifestPath)) {
                 throw new Exception('The Mix manifest does not exist.');
             }
 
-            $manifest = json_decode(file_get_contents($manifestPath), true);
+            $manifests[$manifestPath] = json_decode(file_get_contents($manifestPath), true);
         }
 
-        if (!array_key_exists($path, $manifest)) {
-            throw new Exception(
-                "Unable to locate Mix file: {$path}. Please check your " .
-                'webpack.mix.js output paths and try again.'
-            );
+        $manifest = $manifests[$manifestPath];
+
+        if (!isset($manifest[$path])) {
+            report(new Exception("Unable to locate Mix file: {$path}."));
+
+            if (!app('config')->get('app.debug')) {
+                return $path;
+            }
         }
 
         return new HtmlString($manifestDirectory . $manifest[$path]);
@@ -502,6 +469,25 @@ if (!function_exists('public_path')) {
     function public_path($path = '')
     {
         return app()->basePath() . '/public' . ($path ? DIRECTORY_SEPARATOR . ltrim($path, DIRECTORY_SEPARATOR) : $path);;
+    }
+}
+
+if (!function_exists('report')) {
+    /**
+     * Report an exception.
+     *
+     * @param  \Exception $exception
+     *
+     * @return void
+     */
+    function report($exception)
+    {
+        if ($exception instanceof Throwable &&
+            !$exception instanceof Exception) {
+            $exception = new FatalThrowableError($exception);
+        }
+
+        app(ExceptionHandler::class)->report($exception);
     }
 }
 

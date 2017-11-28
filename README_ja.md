@@ -78,6 +78,7 @@ $app->middleware([
 - **old**
 - **policy**
 - **public_path**
+- **report**
 - **session**
 - **validator**
 

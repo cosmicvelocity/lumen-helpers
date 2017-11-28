@@ -78,6 +78,7 @@ I will do the same operation as Laravel 's same name helper.
 - **old**
 - **policy**
 - **public_path**
+- **report**
 - **session**
 - **validator**
 
