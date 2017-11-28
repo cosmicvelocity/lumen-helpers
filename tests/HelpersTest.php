@@ -60,7 +60,7 @@ class HelpersTest extends TestCase
 
             file_put_contents(public_path('/hot'), '');
 
-            $this->assertEquals((string)mix('/css/default.css'), 'http://127.0.0.1:18081/css/default.css');
+            $this->assertEquals((string)mix('/css/default.css'), '//localhost:18081/css/default.css');
 
             @unlink(public_path('/hot'));
 
