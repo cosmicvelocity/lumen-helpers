@@ -22,6 +22,7 @@ class HelpersTest extends TestCase
     public function testAction()
     {
         $app = new Application();
+        Application::setInstance($app);
 
         $app->router->get('/', 'IndexController@index');
         $app->router->get('/version.html', function () {
@@ -40,7 +41,8 @@ class HelpersTest extends TestCase
 
     public function testAppPath()
     {
-        new Application();
+        $app = new Application();
+        Application::setInstance($app);
 
         $this->assertEquals('/app', app_path());
     }
@@ -95,6 +97,8 @@ class HelpersTest extends TestCase
 
         } catch (Exception $ex) {
             @unlink(public_path('/hot'));
+
+            throw $ex;
         }
     }
 
@@ -104,6 +108,7 @@ class HelpersTest extends TestCase
         $session->put('Hello', 'World');
 
         $app = new Application();
+        Application::setInstance($app);
         $app->instance('session.store', $session);
 
         $response = redirect_with_session('/');
