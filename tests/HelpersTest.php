@@ -36,10 +36,10 @@ class HelpersTest extends TestCase
             if (5.5 <= $version) {
                 $router = app('router');
             } else {
-                $router = $app->getRoutes();
+                $router = $app;
             }
         } else {
-            $router = $app->getRoutes();
+            $router = $app;
         }
 
         $router->get('/', 'IndexController@index');
