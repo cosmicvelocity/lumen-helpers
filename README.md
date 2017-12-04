@@ -1,5 +1,5 @@
 # cosmicvelocity/lumen-helpers
-Lumen provides a helper to support Laravel 's unsupported features.
+Improves interoperability between Lumen and Laravel.
 
 Since Lumen started focusing on providing stateless APIs from 5.2, session etc etc has been removed.
 However, Lumen, which has a low processing speed, is also attractive for regular web application development.
