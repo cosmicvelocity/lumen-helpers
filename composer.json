@@ -1,10 +1,11 @@
 {
   "name": "cosmicvelocity/lumen-helpers",
-  "description": "A library for enhancing interoperability between lumen and laravel.",
+  "description": "Improves interoperability between Lumen and Laravel.",
   "keywords": [
-    "lumen"
+    "lumen",
+    "laravel"
   ],
-  "license": "Apache License 2.0",
+  "license": "Apache-2.0",
   "type": "library",
   "authors": [
     {
@@ -34,6 +35,11 @@
     }
   },
   "scripts": {
-    "test": "phpunit"
+    "test": [
+      "php vendor/bin/phpunit"
+    ],
+    "test-quiet": [
+      "php vendor/bin/phpunit -d error_reporting=0"
+    ]
   }
 }
