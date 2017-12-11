@@ -1,4 +1,6 @@
 # cosmicvelocity/lumen-helpers
+[![Build Status](https://travis-ci.org/cosmicvelocity/lumen-helpers.svg?branch=master)](https://travis-ci.org/cosmicvelocity/lumen-helpers)
+
 Improves interoperability between Lumen and Laravel.
 
 Since Lumen started focusing on providing stateless APIs from 5.2, session etc etc has been removed.

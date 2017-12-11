@@ -1,4 +1,6 @@
 # cosmicvelocity/lumen-helpers
+[![Build Status](https://travis-ci.org/cosmicvelocity/lumen-helpers.svg?branch=master)](https://travis-ci.org/cosmicvelocity/lumen-helpers)
+
 Lumen ではサポートされていない Laravel の機能をサポートするヘルパーを提供します。
 
 Lumen は 5.2 からステートレスな API を提供する事に焦点をあてるようになったため、session などが外されています。
