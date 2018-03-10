@@ -67,6 +67,36 @@ class HelpersTest extends TestCase
     }
 
     /**
+     * @covers ::mix
+     */
+    public function testMix1()
+    {
+        try {
+            $hotPath = public_path('/hot');
+
+            $app = new Application(__DIR__);
+            $app->make('config')->set('app.url', 'http://127.0.0.1:8080');
+            $app->make('config')->set('mix.port', '18081');
+            $app->instance('request', Request::create('/', 'GET', [], [], [], ['HTTP_HOST' => '127.0.0.1:8080']));
+
+            file_put_contents($hotPath, '');
+
+            $this->assertEquals(Application::getInstance(), $app);
+            $this->assertEquals((string)mix('/css/default.css'), '//localhost:18081/css/default.css');
+
+            $app->make('config')->set('mix.host', '192.168.1.1');
+            $app->make('config')->set('mix.port', '18081');
+
+            $this->assertEquals((string)mix('/css/default.css'), '//192.168.1.1:18081/css/default.css');
+
+        } catch (Exception $ex) {
+
+        } finally {
+            @unlink($hotPath);
+        }
+    }
+
+    /**
      * @throws Exception
      */
     public function testMix()

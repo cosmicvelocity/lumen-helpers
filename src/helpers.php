@@ -399,8 +399,9 @@ if (!function_exists('mix')) {
 
         if (file_exists(public_path($manifestDirectory . '/hot'))) {
             $port = config('mix.port', 8080);
+            $host = config('mix.host', 'localhost');
 
-            return new HtmlString("//localhost:{$port}{$path}");
+            return new HtmlString("//{$host}:{$port}{$path}");
         }
 
         $manifestPath = public_path($manifestDirectory . '/mix-manifest.json');
